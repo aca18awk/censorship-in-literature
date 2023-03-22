@@ -1,0 +1,111 @@
+body {
+  /* margin: 50; */
+  overflow: hidden;
+  font-family: sans-serif;
+  font-size: 13px;
+  background: #f7f7f7;
+}
+
+h1 {
+  margin-top: 0;
+}
+
+.source {
+  font-size: 10px;
+  color: #888;
+}
+.source a {
+  color: #888;
+}
+
+/* Marks */
+/*
+.point {
+  fill: steelblue;
+  opacity: 0.3;
+}
+*/
+
+.point:hover {
+  stroke: #333;
+}
+
+/* Axes */
+.axis line {
+  fill: none;
+  stroke: #ddd;
+  shape-rendering: crispEdges;
+}
+.axis text {
+  font-size: 13px;
+  fill: #6b6b6b;
+}
+.x-axis .axis-title {
+  font-size: 1.75em;
+  fill: #8e8883;
+}
+.y-axis .axis-title {
+  font-size: 1.75em;
+  fill: #8e8883;
+}
+.axis path {
+  display: none;
+}
+
+/* Tooltip */
+#tooltip {
+  position: absolute;
+  display: none;
+  background: #fff;
+  box-shadow: 3px 3px 3px 0px rgb(92 92 92 / 0.5);
+  border: 1px solid #ddd;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px;
+  min-width: 160px;
+  color: #333;
+}
+.tooltip-title {
+  color: #000;
+  font-size: 14px;
+  font-weight: 600;
+}
+#tooltip ul {
+  margin: 5px 0 0 0;
+  padding-left: 20px;
+}
+
+/* Legend */
+.legend {
+  list-style: none;
+  padding: 0;
+}
+.legend-item {
+  display: inline-block;
+  margin: 0 20px 0 0;
+}
+.legend-symbol {
+  width: 12px;
+  height: 12px;
+  margin-right: 3px;
+  display: inline-block;
+}
+.legend-item[data-difficulty="Easy"] .legend-symbol {
+  background: #d3eecd;
+}
+.legend-item[data-difficulty="Intermediate"] .legend-symbol {
+  background: #7bc77e;
+}
+.legend-item[data-difficulty="Difficult"] .legend-symbol {
+  background: #2a8d46;
+}
+
+svg {
+  border: 1px solid #ddd;
+  margin-left: 50px;
+}
+
+circle {
+  stroke: white;
+  stroke-width: 1.5;
+}
