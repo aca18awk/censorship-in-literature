@@ -4,63 +4,26 @@
 
 export const createBubbleChart = (parent, props) => {
   // unpack my props
-  let { data, margin, no_of_results_selected } = props;
-  console.log(no_of_results_selected);
-  data = data.slice(0, no_of_results_selected);
-  const isPointOnCircle = (i) => i < data.length * 0.7;
-
-  const width = +parent.attr("width");
-  const height = +parent.attr("height");
-  const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
-  const xMiddle = width / 2 - margin.left;
-  const yMiddle = height / 2 - margin.top;
-
-  const countAccessor = (d) => d.count;
-  const circleSize = { min: 3, max: 30 };
+  let { data, width, height, xScale } = props;
+  const xMiddle = width / 2;
+  const yMiddle = height / 2;
 
   const allCounts = data.map((d) => d.count);
-
+  // TODO: fix colour scale
   const colorScale = d3.scaleOrdinal(d3.schemeReds[5]).domain(allCounts);
-
-  const circleRadiusScale = d3
-    .scaleSqrt()
-    .domain(d3.extent(data, countAccessor))
-    .range([circleSize.min, circleSize.max]);
-
-  const xScale = d3
-    .scaleLinear()
-    .domain([0, 1])
-    .range([margin.left, width - margin.right]);
-
-  const yScale = d3
-    .scaleLinear()
-    .domain([0, 1])
-    .range([margin.top, height - margin.bottom]);
-
-  data = data.map((d, i) => ({
-    ...d,
-    x: xScale(Math.min(Math.max(d3.randomNormal(0.5, 0.1)(), 0), 1)),
-    y: yScale(Math.min(Math.max(d3.randomNormal(0.5, 0.15)(), 0), 1)),
-  }));
-
-  const getRadius = (d) => circleRadiusScale(d.count);
 
   // Chart taking care of inner margins
   const chart = parent.selectAll(".chart").data([null]);
-  const chartEnter = chart
-    .enter()
-    .append("g")
-    .attr("class", "chart")
-    .attr("transform", `translate(${margin.left},${margin.top})`);
+  const chartEnter = chart.enter().append("g").attr("class", "chart");
 
+  // TODO: fix zooming in
   parent.call(
     d3
       .zoom()
       .scaleExtent([1, 8])
       .translateExtent([
-        [-margin.left, -margin.top],
-        [innerWidth + margin.right, innerHeight + margin.bottom],
+        [-0, 0],
+        [width, height],
       ])
       .on("zoom", (event) => chartEnter.attr("transform", event.transform))
   );
@@ -97,28 +60,27 @@ export const createBubbleChart = (parent, props) => {
     .attr("y2", yMiddle);
 
   // Plot data
-  const points = chartEnter
+  const circles = chartEnter
     .merge(chart)
     .selectAll(".bubble")
     .data(data, (d) => d.author);
-  const circles = points.enter().append("circle").attr("class", "bubble");
+  const circlesEnter = circles.enter().append("circle").attr("class", "bubble");
 
-  circles
-    .merge(points)
-    .attr("r", (d) => getRadius(d))
+  circlesEnter
+    .merge(circles)
+    .attr("r", (d) => d.r)
     .attr("fill", (d) => colorScale(d.count));
 
-  points.exit().remove();
+  circles.exit().remove();
 
   var forceStrength = 0.2;
 
-  const forceSimulation = d3
-    .forceSimulation(data)
+  d3.forceSimulation(data)
     .force(
       "x",
       d3
-        .forceX((d, i) =>
-          isPointOnCircle(i)
+        .forceX((d) =>
+          d.isPointOnCircle
             ? xMiddle
             : xScale(Math.min(Math.max(d3.randomNormal(0.5, 0.1)(), 0), 1))
         )
@@ -127,27 +89,29 @@ export const createBubbleChart = (parent, props) => {
     .force("y", d3.forceY(yMiddle).strength(forceStrength))
     .force(
       "collide",
-      d3.forceCollide().radius((d) => getRadius(d) + 1)
+      d3.forceCollide().radius((d) => d.r + 1)
     )
     .force(
       "radial",
       d3
         .forceRadial(
-          (d, i) => (isPointOnCircle(i) ? Math.min(width, height) / 1.7 : 0),
+          (d) => (d.isPointOnCircle ? Math.min(width, height) / 1.7 : 0),
           xMiddle,
           yMiddle
         )
-        .strength((d, i) => (isPointOnCircle(i) ? 0.5 : 0))
-    );
-
-  // indicate how we should update the graph for each tick
-  forceSimulation.on("tick", () =>
-    circles.attr("cx", (d) => d.x).attr("cy", (d) => d.y)
-  );
+        .strength((d) => (d.isPointOnCircle ? 0.5 : 0))
+    )
+    .on("tick", () => {
+      chartEnter
+        .merge(chart)
+        .selectAll(".bubble")
+        .attr("cx", (d) => d.x)
+        .attr("cy", (d) => d.y);
+    });
 
   // TOOLTIP EVENTS
   const tooltipPadding = 15;
-  circles
+  circlesEnter
     .on("mouseover", (event, d) => {
       d3
         .select("#tooltip")

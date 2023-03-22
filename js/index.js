@@ -5,7 +5,7 @@ import { dropdownMenu } from "./dropdownMenu.js";
 
 // Global/state variables
 let data;
-let no_of_results_options = [
+const no_of_results_options = [
   {
     name: "top 100",
     value: "100",
@@ -32,6 +32,22 @@ let no_of_results_selected = "300";
 const svg = d3.select("svg");
 // .attr("width", +document.documentElement.clientWidth)
 // .attr("height", +document.documentElement.clientHeight);
+const margin = { top: 0, bottom: 0, left: 0, right: 0 };
+const width = +svg.attr("width");
+const height = +svg.attr("height");
+
+const xScale = d3
+  .scaleLinear()
+  .domain([0, 1])
+  .range([margin.left, width - margin.right]);
+
+const yScale = d3
+  .scaleLinear()
+  .domain([0, 1])
+  .range([margin.top, height - margin.bottom]);
+
+const countAccessor = (d) => d.count;
+const circleSize = { min: 3, max: 30 };
 
 // Function(s) triggered by event listeners
 const onNoOfResultsSelected = (event) => {
@@ -48,18 +64,27 @@ const updateVis = () => {
 
   // refresh scatterplot
   svg.call(createBubbleChart, {
-    data: data,
-    margin: { top: 0, bottom: 0, left: 0, right: 0 },
-    no_of_results_selected,
+    data: data.slice(0, no_of_results_selected),
+    width,
+    height,
+    xScale,
   });
 };
 
 // Data loading, preprocessing, and init visualisation
 d3.csv("./data/forbidden1000.csv").then((loadedData) => {
   data = loadedData;
+  const circleRadiusScale = d3
+    .scaleSqrt()
+    .domain(d3.extent(data, countAccessor))
+    .range([circleSize.min, circleSize.max]);
   // Data parsing
   data.forEach((d) => {
     d.count = +d.count;
+    d.x = xScale(Math.min(Math.max(d3.randomNormal(0.5, 0.1)(), 0), 1));
+    d.y = yScale(Math.min(Math.max(d3.randomNormal(0.5, 0.15)(), 0), 1));
+    d.r = circleRadiusScale(d.count);
+    d.isPointOnCircle = Math.random() < 0.8;
   });
 
   // Calculate counts per each of the difficulty levels
