@@ -7,7 +7,7 @@ export const createBubbleChart = (parent, props) => {
   let { data, margin, no_of_results_selected } = props;
   console.log(no_of_results_selected);
   data = data.slice(0, no_of_results_selected);
-  const breakPoint = data.length * 0.7;
+  const isPointOnCircle = (i) => i < data.length * 0.7;
 
   const width = +parent.attr("width");
   const height = +parent.attr("height");
@@ -42,9 +42,9 @@ export const createBubbleChart = (parent, props) => {
     ...d,
     x: xScale(Math.min(Math.max(d3.randomNormal(0.5, 0.1)(), 0), 1)),
     y: yScale(Math.min(Math.max(d3.randomNormal(0.5, 0.15)(), 0), 1)),
-    r: circleRadiusScale(d.count),
-    position: i < breakPoint ? "circle" : "line",
   }));
+
+  const getRadius = (d) => circleRadiusScale(d.count);
 
   // Chart taking care of inner margins
   const chart = parent.selectAll(".chart").data([null]);
@@ -105,13 +105,8 @@ export const createBubbleChart = (parent, props) => {
     .enter()
     .append("circle")
     .attr("class", "bubble")
-
-    .attr("r", (d) => circleRadiusScale(d.count))
-    .attr("fill", (d) => colorScale(d.count))
-    // .transition()
-    // .duration(1000)
-    .attr("cx", (d) => (d.x ? d.x : width / 2))
-    .attr("cy", (d) => (d.y ? d.y : height / 2));
+    .attr("r", (d) => getRadius(d))
+    .attr("fill", (d) => colorScale(d.count));
 
   var forceStrength = 0.2;
 
@@ -120,23 +115,27 @@ export const createBubbleChart = (parent, props) => {
     .force(
       "x",
       d3
-        .forceX((d) => (d.position === "circle" ? xMiddle : d.x))
+        .forceX((d, i) =>
+          isPointOnCircle(i)
+            ? xMiddle
+            : xScale(Math.min(Math.max(d3.randomNormal(0.5, 0.1)(), 0), 1))
+        )
         .strength(forceStrength)
     )
     .force("y", d3.forceY(yMiddle).strength(forceStrength))
     .force(
       "collide",
-      d3.forceCollide().radius((d) => d.r + 1)
+      d3.forceCollide().radius((d) => getRadius(d) + 1)
     )
     .force(
       "radial",
       d3
         .forceRadial(
-          (d) => (d.position === "circle" ? Math.min(width, height) / 1.7 : 0),
+          (d, i) => (isPointOnCircle(i) ? Math.min(width, height) / 1.7 : 0),
           xMiddle,
           yMiddle
         )
-        .strength((d) => (d.position === "circle" ? 0.5 : 0))
+        .strength((d, i) => (isPointOnCircle(i) ? 0.5 : 0))
     );
 
   // indicate how we should update the graph for each tick
