@@ -1,16 +1,22 @@
 // Adopted from: https://github.com/jeffreymorganio/d3-country-bubble-chart
 // https://www.d3indepth.com/force-layout/
 // https://observablehq.com/d/bab58bcfeea93d76
+// https://stackoverflow.com/questions/51153379/getting-d3-force-to-work-in-update-pattern
 
 export const createBubbleChart = (parent, props) => {
   // unpack my props
   let { data, width, height, xScale } = props;
   const xMiddle = width / 2;
   const yMiddle = height / 2;
-
-  const allCounts = data.map((d) => d.count);
-  // TODO: fix colour scale
-  const colorScale = d3.scaleOrdinal(d3.schemeReds[5]).domain(allCounts);
+  const allCounts = data
+    .map((d) => d.r)
+    .sort()
+    .reverse();
+  // TODO: choose appropriate colours
+  const colorScale = d3
+    .scaleSequential()
+    .domain(d3.extent(data, (d) => d.r))
+    .interpolator(d3.interpolateReds);
 
   // Chart taking care of inner margins
   const chart = parent.selectAll(".chart").data([null]);
@@ -66,10 +72,16 @@ export const createBubbleChart = (parent, props) => {
     .data(data, (d) => d.author);
   const circlesEnter = circles.enter().append("circle").attr("class", "bubble");
 
+  const getColour = (d) => {
+    if (d.all_works_forbidden) return "#e0c600";
+    if (d.multiple_works_forbidden) return "#0d9c08";
+    return colorScale(d.r);
+  };
+
   circlesEnter
     .merge(circles)
     .attr("r", (d) => d.r)
-    .attr("fill", (d) => colorScale(d.count));
+    .attr("fill", (d) => getColour(d));
 
   circles.exit().remove();
 
@@ -110,6 +122,7 @@ export const createBubbleChart = (parent, props) => {
     });
 
   // TOOLTIP EVENTS
+  // TODO: display where it was banned
   const tooltipPadding = 15;
   circlesEnter
     .on("mouseover", (event, d) => {
