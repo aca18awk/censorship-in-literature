@@ -101,12 +101,14 @@ export const createBubbleChart = (parent, props) => {
     .merge(chart)
     .selectAll(".bubble")
     .data(data, (d) => d.author);
-  const circles = points
-    .enter()
-    .append("circle")
-    .attr("class", "bubble")
+  const circles = points.enter().append("circle").attr("class", "bubble");
+
+  circles
+    .merge(points)
     .attr("r", (d) => getRadius(d))
     .attr("fill", (d) => colorScale(d.count));
+
+  points.exit().remove();
 
   var forceStrength = 0.2;
 
