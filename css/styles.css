@@ -1,6 +1,6 @@
 body {
   /* margin: 50; */
-  overflow: hidden;
+  /* overflow: hidden; */
   font-family: sans-serif;
   font-size: 13px;
   background: #f7f7f7;
@@ -65,6 +65,7 @@ h1 {
   min-width: 160px;
   color: #333;
 }
+
 .tooltip-title {
   color: #000;
   font-size: 14px;
@@ -108,4 +109,51 @@ svg {
 circle {
   stroke: white;
   stroke-width: 1.5;
+}
+
+.sphere {
+  fill: #48c8d4;
+  stroke: black;
+  stroke-width: 0.5px;
+}
+
+.country {
+  stroke: white;
+  stroke-width: 0.1px;
+}
+
+.graticule {
+  stroke: black;
+  stroke-width: 0.1px;
+  fill: none;
+}
+
+/* Axes */
+.x-axis .domain {
+  stroke: #8693a0;
+}
+.tick text {
+  font-size: 1.5em;
+  fill: #6b6b6b;
+}
+.tick line {
+  stroke: #c0c0bb;
+}
+
+.chart-line {
+  fill: none;
+  /* stroke: #517390; */
+  stroke-width: 2px;
+}
+
+/* Data source */
+.source {
+  margin-top: 10px;
+  margin-left: 40px;
+  font-size: 0.75em;
+  font-family: sans-serif;
+  color: #888;
+}
+.source a {
+  color: #888;
 }
