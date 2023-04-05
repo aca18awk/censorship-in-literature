@@ -1,0 +1,10 @@
+.sign {
+  stroke: #c60116;
+  stroke-opacity: 0.5;
+  fill: none;
+}
+
+/* styling the gradient legend. */
+.legend {
+  transform: translate(1000px, 520px);
+}

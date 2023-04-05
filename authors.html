@@ -4,22 +4,34 @@
     <title>Forbidden Authors</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link rel="stylesheet" href="./css/styles.css" />
+    <link rel="stylesheet" href="./css/authors.css" />
   </head>
+
+  <header>
+    <div>
+      <a class="page_title">Forbidden Library</a>
+      <a href="index.html">The most banned books</a>
+      <a href="authors.html">The most censored Authors</a>
+      <a href="map.html">Censorship in different countries </a>
+    </div>
+  </header>
   <body>
-    <h1>Forbidden Authors</h1>
     <div id="country-info"></div>
 
-    <div id="menus">
+    <div class="filters">
       <span>Display results:</span>
       <span id="number_of_results_menu"></span>
 
       <span>Select location:</span>
       <span id="location_menu"></span>
+      <span class="selected-options">
+        <span>Filters:</span>
+      </span>
     </div>
-    <svg width="1200" height="700"></svg>
+    <svg width="1400" height="700"></svg>
 
     <div id="tooltip"></div>
 
-    <script src="./js/forbiddenAuthors.js" type="module"></script>
+    <script src="./js/bubbleChartView/index.js" type="module"></script>
   </body>
 </html>

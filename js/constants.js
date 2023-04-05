@@ -1,4 +1,4 @@
-export const no_of_results_options = [
+export const NO_OF_RESULTS_OPTIONS = [
   {
     name: "top 100",
     value: "100",
@@ -21,7 +21,7 @@ export const no_of_results_options = [
   },
 ];
 
-export const locations = [
+export const LOCATIONS = [
   "Afghanistan",
   "Algeria",
   "Argentina",
@@ -33,17 +33,17 @@ export const locations = [
   "Bangladesh",
   "Belarus",
   "Bhutan",
-  "Bosnia-Herzegovina",
+  "Bosnia and Herzegovina",
   "British Indian Ocean Territory",
   "Brunei",
   "Canada",
   "Central African Republic",
   "Chile",
   "China",
-  "Columbia",
+  "Colombia",
   "Croatia",
   "Cuba",
-  "Czech Republic",
+  "Czechia",
   "Denmark",
   "Djibouti",
   "East Germany",
@@ -80,7 +80,7 @@ export const locations = [
   "Moldova",
   "Montenegro",
   "Morocco",
-  "Myanmar (Burma)",
+  "Myanmar",
   "Nepal",
   "Netherlands",
   "New Zealand",
@@ -91,11 +91,11 @@ export const locations = [
   "Norway",
   "Oman",
   "Pakistan",
-  "Philippines (Mindanao)",
+  "Philippines",
   "Poland",
   "Portugal",
   "Qatar",
-  "Republic of Korea",
+  "South Korea",
   "Romania",
   "Russia",
   "Saudi Arabia",
@@ -116,21 +116,19 @@ export const locations = [
   "Ukraine",
   "United Arab Emirates",
   "United Kingdom",
-  "USA",
-  "USA/Texas",
+  "United States of America",
   "Uzbekistan",
-  "Vatican City",
+  "Vatican",
   "Vietnam",
   "Yemen",
 ];
 
-let helper = locations.map((d) => ({
-  name: d,
-  value: d,
-}));
-export const locations_options = [
+export const LOCATIONS_OPTIONS = [
   { name: "All countries", value: "All countries" },
-  ...helper,
+  ...LOCATIONS.map((d) => ({
+    name: d,
+    value: d,
+  })),
 ];
 
 export const year_ban = [

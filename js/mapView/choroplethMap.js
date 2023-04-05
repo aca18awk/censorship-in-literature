@@ -1,10 +1,12 @@
+import { COLOUR_NO_DATA } from "../colourPallete.js";
 export const drawChoroplethMap = (parent, props) => {
-  const { countries, onClick, isCountrySelected, isAnyCountrySelected } = props;
-
-  const colourScale = d3
-    .scaleSequential()
-    .domain(d3.extent(countries.features, (d) => d.properties.count))
-    .interpolator(d3.interpolateReds);
+  const {
+    countries,
+    onClick,
+    isCountrySelected,
+    isAnyCountrySelected,
+    colourScale,
+  } = props;
 
   const width = +parent.attr("width");
   const height = +parent.attr("height");
@@ -16,7 +18,7 @@ export const drawChoroplethMap = (parent, props) => {
   const mapArea = parent.selectAll(".mapArea").data([null]);
   const mapAreaEnter = mapArea.enter().append("g").attr("class", "mapArea");
 
-  // Zoom interactivity (using d3-zoom package -- standard d3 bundle)
+  // Zoom interactivity
   mapAreaEnter.call(
     d3
       .zoom()
@@ -25,7 +27,9 @@ export const drawChoroplethMap = (parent, props) => {
         [0, 0],
         [width, height],
       ])
-      .on("zoom", (event) => mapAreaEnter.attr("transform", event.transform))
+      .on("zoom", (event) =>
+        mapAreaEnter.merge(mapArea).attr("transform", event.transform)
+      )
   );
 
   // Earth's border
@@ -40,14 +44,14 @@ export const drawChoroplethMap = (parent, props) => {
     .selectAll(".country")
     .data(countries.features);
 
-  const countriesEnter = allCountries.enter().append("path");
+  const allCountriesEnter = allCountries.enter().append("path");
 
-  countriesEnter
+  allCountriesEnter
     .merge(allCountries)
     .attr("class", "country")
     .attr("d", pathGenerator)
     .attr("fill", (d) =>
-      d.properties.count ? colourScale(d.properties.count) : "#7a7a7a"
+      d.properties.count ? colourScale(d.properties.count) : COLOUR_NO_DATA
     )
     .style("stroke-width", (d) =>
       isCountrySelected(d.properties.name) ? 1.5 : 0.1
@@ -59,12 +63,21 @@ export const drawChoroplethMap = (parent, props) => {
       isAnyCountrySelected && !isCountrySelected(d.properties.name) ? 0.6 : 1
     );
 
+  // interactivity events
+  allCountriesEnter
+    // Set the cursor style to "pointer" for countries with data
+    .attr("cursor", (d) => (d.properties.count ? "pointer" : "default"))
+    .on("click", (_, d) => {
+      // can only select countries with data available
+      if (d.properties.count) {
+        onClick(d);
+      }
+    });
+
   // Tooltip event listeners
   const tooltipPadding = 15;
 
-  countriesEnter
-    // Set the cursor style to "pointer" for countries with data
-    .attr("cursor", (d) => (d.properties.count ? "pointer" : "default"))
+  allCountriesEnter
     .on("mouseover", (event, d) => {
       d3
         .select("#tooltip")
@@ -79,11 +92,5 @@ export const drawChoroplethMap = (parent, props) => {
     })
     .on("mouseleave", () => {
       d3.select("#tooltip").style("display", "none");
-    })
-    .on("click", (_, d) => {
-      // can only select countries with data available
-      if (d.properties.count) {
-        onClick(d);
-      }
     });
 };

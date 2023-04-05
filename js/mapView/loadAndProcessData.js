@@ -3,7 +3,7 @@ import { year_ban } from "../constants.js";
 export const loadAndProcessData = () =>
   Promise.all([
     d3.json("./data/countries-50m.json"),
-    d3.csv("./data/countries_analysis.csv"),
+    d3.csv("./data/countries_unified.csv"),
   ]).then(([topoData, csvData]) => {
     // Conversion from TopoJSON to GeoJSON
     const countries = topojson.feature(topoData, topoData.objects.countries);

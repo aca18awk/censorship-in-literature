@@ -1,9 +1,85 @@
+#map_container {
+  /* background-color: green; */
+  float: left;
+  width: 70%;
+  margin: 0;
+  padding-left: 10px;
+}
+
+#line_container {
+  /* background-color: yellow; */
+  float: right;
+  margin: 0;
+  width: 28%;
+}
+#graphs_container {
+  /* background-color: blue; */
+}
+
+.selected_location {
+  border: 0.5px solid black;
+  border-radius: 6px;
+  height: 25px;
+}
+svg {
+  fill: black;
+  /* background-color: red; */
+  border: 1px solid #ddd;
+}
+
+.filters {
+  /* background-color: #48c8d4; */
+  margin: 10px;
+}
+
+/* Add a black background color to the top navigation */
+header {
+  background-color: #2b0104;
+  overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+header a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  /* padding-top: 0; */
+  text-decoration: none;
+  font-size: 17px;
+}
+
+/* Change the color of links on hover */
+header a:hover {
+  /* background-color: #ddd; */
+  /* color: black; */
+  font-weight: bold;
+}
+
+/* Add a color to the active/current link */
+header a.active {
+  background-color: #04aa6d;
+  color: white;
+}
+
+.page_title {
+  color: wheat;
+  /* text-align: center; */
+  /* margin-top: 20px; */
+  font-size: 30px;
+  padding-top: 7px;
+}
+
+.page_title:hover {
+  font-weight: normal;
+}
+
 body {
-  /* margin: 50; */
-  /* overflow: hidden; */
+  margin: 0;
+  overflow: hidden;
   font-family: sans-serif;
   font-size: 13px;
-  background: #f7f7f7;
+  background: #e8e6da;
 }
 
 h1 {
@@ -101,11 +177,6 @@ h1 {
   background: #2a8d46;
 }
 
-svg {
-  border: 1px solid #ddd;
-  margin-left: 50px;
-}
-
 circle {
   stroke: white;
   stroke-width: 1.5;
@@ -156,4 +227,15 @@ circle {
 }
 .source a {
   color: #888;
+}
+
+/* The y position of labels was too close to the bar so I adjusted it in the
+colourbar.js and here I just changed the size of the text */
+.legend-label {
+  font-size: 14px;
+}
+
+.legend-title {
+  font-size: 14px;
+  font-weight: bold;
 }

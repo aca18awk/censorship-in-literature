@@ -1,0 +1,4 @@
+/* styling the gradient legend. */
+.legend {
+  transform: translate(20px, 400px);
+}

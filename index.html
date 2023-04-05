@@ -4,15 +4,18 @@
     <title>Forbidden Authors</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link rel="stylesheet" href="./css/styles.css" />
+    <link rel="stylesheet" href="./css/books.css" />
   </head>
-  <body>
-    <header>
-      <h1>Forbidden Library</h1>
-      <a href="index.html">Explore censored books around the world</a>
-      <a href="authors.html">Check the most censored Authors</a>
-      <a href="map.html">Compare censorship in different countries </a>
-    </header>
 
+  <header>
+    <div>
+      <a class="page_title">Forbidden Library</a>
+      <a href="index.html">The most banned books</a>
+      <a href="authors.html">The most censored Authors</a>
+      <a href="map.html">Censorship in different countries </a>
+    </div>
+  </header>
+  <body>
     <!-- <ul class="legend">
       <li class="legend-item" data-difficulty="Easy">
         <span class="legend-symbol"></span> Easy
@@ -30,6 +33,16 @@
       <a href="https://vancouvertrails.com/trails/">vancouvertrails.com</a>
     </div> -->
 
+    <div class="filters">
+      <span>Display results:</span>
+      <span id="number_of_results_menu"></span>
+
+      <span>Select location:</span>
+      <span id="location_menu"></span>
+    </div>
+    <svg width="1400" height="700"></svg>
+
     <div id="tooltip"></div>
+    <script src="./js/barChartView/index.js" type="module"></script>
   </body>
 </html>
