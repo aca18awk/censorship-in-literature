@@ -6,5 +6,6 @@
 
 /* styling the gradient legend. */
 .legend {
-  transform: translate(1000px, 520px);
+  /* transform: translate(1000px, 520px); */
+  transform: translate(30px, 520px);
 }

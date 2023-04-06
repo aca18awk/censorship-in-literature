@@ -1,7 +1,7 @@
 #map_container {
   /* background-color: green; */
   float: left;
-  width: 70%;
+  width: 60%;
   margin: 0;
   padding-left: 10px;
 }
@@ -10,7 +10,7 @@
   /* background-color: yellow; */
   float: right;
   margin: 0;
-  width: 28%;
+  width: 38%;
 }
 #graphs_container {
   /* background-color: blue; */

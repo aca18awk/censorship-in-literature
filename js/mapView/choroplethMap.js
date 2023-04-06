@@ -12,7 +12,11 @@ export const drawChoroplethMap = (parent, props) => {
   const height = +parent.attr("height");
 
   // // Define projection and pathGenerator
-  const projection = d3.geoEquirectangular();
+  const projection = d3
+    .geoEquirectangular()
+    .center([0, 15]) // set centre to further North
+    .scale([width / (2 * Math.PI)]) // scale to fit group width
+    .translate([width / 2, height / 2]);
   const pathGenerator = d3.geoPath().projection(projection);
 
   const mapArea = parent.selectAll(".mapArea").data([null]);

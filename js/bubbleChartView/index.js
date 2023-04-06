@@ -7,16 +7,12 @@ import {
 } from "../constants.js";
 import { COLOUR_NUMERICAL_ARRAY_4 } from "../colourPallete.js";
 import { addLegend } from "./legend.js";
-import { addOptionButton, removeButton } from "../locationButton.js";
 
 // Global/state variables
-const selectedOptions = document.querySelector(".selected-options");
-
 let plot_data;
 let all_data;
 let no_of_results_selected = "300";
-let locations_selected = [];
-let lastLocationSelected = "All countries";
+let location_selected = sessionStorage.getItem("location") ?? "All countries";
 let circleRadiusScale;
 let colourScale;
 
@@ -32,70 +28,30 @@ const yScale = d3.scaleLinear().domain([0, 1]).range([0, height]);
 const circleSize = { min: 3, max: 30 };
 const legendTitle = "Number of positions banned:";
 
-selectedOptions.addEventListener("click", (event) => {
-  if (event.target.tagName === "BUTTON") {
-    const optionValue = event.target.getAttribute("data-value");
-    unselectCountry(optionValue);
-    updateVis();
-  }
-});
-
 // Function(s) triggered by event listeners
 const onNoOfResultsSelected = (event) => {
   no_of_results_selected = event.target.value;
   updateVis();
 };
 
-const isCountrySelected = (name) => locations_selected.includes(name);
-
-const unselectCountry = (country) => {
-  locations_selected = locations_selected.filter((c) => c !== country);
-  if (locations_selected.length === 0) {
-    plot_data = all_data;
-  } else {
-    plot_data = all_data.filter(
-      (d) =>
-        d.banned_in.filter((ban) => locations_selected.includes(ban.location))
-          .length > 0
-    );
-  }
-  const button = document.querySelector(`button[data-value="${country}"]`);
-  removeButton(button, country);
+const filterData = () => {
+  plot_data = all_data.filter(
+    (d) =>
+      d.banned_in.filter((ban) => ban.location === location_selected).length > 0
+  );
 };
 
 const onLocationSelected = (event) => {
-  const country = event.target.value;
-
-  if (isCountrySelected(country)) {
-    unselectCountry(country);
+  location_selected = event.target.value;
+  sessionStorage.setItem("location", location_selected);
+  if (location_selected === "All countries") {
+    plot_data = all_data;
   } else {
-    addOptionButton(country, selectedOptions);
-    locations_selected.push(country);
-    plot_data = all_data.filter(
-      (d) =>
-        d.banned_in.filter((ban) => locations_selected.includes(ban.location))
-          .length > 0
-    );
+    // data only contains data points from selected country
+    filterData();
   }
-
   updateVis();
 };
-
-// const onLocationSelected = (event) => {
-//   location_selected = event.target.value;
-
-//   if (location_selected === "All countries") {
-//     plot_data = all_data;
-//   } else {
-//     // data only contains data points from selected country
-//     plot_data = all_data.filter(
-//       (d) =>
-//         d.banned_in.filter((ban) => ban.location === location_selected).length >
-//         0
-//     );
-//   }
-//   updateVis();
-// };
 
 const updateVis = () => {
   // create dropdown menus
@@ -108,7 +64,7 @@ const updateVis = () => {
   dropdownMenu(d3.select("#location_menu"), {
     options: LOCATIONS_OPTIONS,
     onOptionSelected: onLocationSelected,
-    selected: lastLocationSelected,
+    selected: location_selected,
   });
 
   // create bubble chart
@@ -175,6 +131,8 @@ d3.csv("./data/authors_all.csv").then((loadedData) => {
 
   all_data = processedData;
   plot_data = processedData;
+
+  if (location_selected !== "All countries") filterData();
 
   // Init visualisation
   updateVis();

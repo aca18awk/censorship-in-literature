@@ -1,56 +1,56 @@
 export const drawBookshelf = (
   chartEnter,
   margin,
-  shelfHight,
-  shelfWidth,
-  positionBooksX
+  cabinetHeight,
+  cabinetWidth,
+  positionX
 ) => {
   chartEnter
     .append("rect")
     .attr("class", "bookshelf")
-    .attr("x", positionBooksX(0))
-    .attr("y", margin.top + shelfHight - 10)
-    .attr("width", shelfWidth)
+    .attr("x", positionX(0))
+    .attr("y", margin.top + cabinetHeight - 10)
+    .attr("width", cabinetWidth)
     .attr("height", 20);
 
   chartEnter
     .append("rect")
     .attr("class", "bookshelf")
-    .attr("x", positionBooksX(0))
+    .attr("x", positionX(0))
     .attr("y", margin.top + 100)
-    .attr("width", shelfWidth)
+    .attr("width", cabinetWidth)
     .attr("height", 10);
 
   chartEnter
     .append("rect")
     .attr("class", "bookshelf")
-    .attr("x", positionBooksX(0))
+    .attr("x", positionX(0))
     .attr("y", margin.top + 210)
-    .attr("width", shelfWidth)
+    .attr("width", cabinetWidth)
     .attr("height", 10);
 
   chartEnter
     .append("rect")
     .attr("class", "bookshelf")
-    .attr("x", positionBooksX(0))
+    .attr("x", positionX(0))
     .attr("y", margin.top + 320)
-    .attr("width", shelfWidth)
+    .attr("width", cabinetWidth)
     .attr("height", 10);
 
   chartEnter
     .append("rect")
     .attr("class", "bookshelf")
-    .attr("x", positionBooksX(0))
+    .attr("x", positionX(0))
     .attr("y", margin.top + 430)
-    .attr("width", shelfWidth)
+    .attr("width", cabinetWidth)
     .attr("height", 10);
 
   chartEnter
     .append("rect")
     .attr("class", "bookshelf")
-    .attr("x", positionBooksX(0))
+    .attr("x", positionX(0))
     .attr("y", margin.top - 30)
-    .attr("width", shelfWidth)
+    .attr("width", cabinetWidth)
     .attr("height", 20);
 
   chartEnter
@@ -60,17 +60,17 @@ export const drawBookshelf = (
     .attr("y", margin.top - 30)
     .attr("x", margin.left - 20)
     .attr("width", 20)
-    .attr("height", shelfHight + 50);
+    .attr("height", cabinetHeight + 50);
 
   chartEnter
     .append("rect")
     .attr("class", "bookshelf")
     .attr("y", margin.top - 30)
-    .attr("x", margin.left + shelfWidth)
+    .attr("x", margin.left + cabinetWidth)
     .attr("width", 20)
-    .attr("height", shelfHight + 50);
+    .attr("height", cabinetHeight + 50);
 
-  const archLength = (shelfWidth + 40) / 9;
+  const archLength = (cabinetWidth + 40) / 9;
 
   const lines = [
     [0, 90],

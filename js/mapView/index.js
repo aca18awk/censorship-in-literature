@@ -41,7 +41,6 @@ const unselectCountry = (country) => {
 
 const onMapClick = (d) => {
   const country = d.properties.name;
-
   if (isCountrySelected(country)) {
     unselectCountry(country);
   } else {
