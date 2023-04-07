@@ -18,7 +18,7 @@ export const createBarChart = (parent, props) => {
   const cabinetHeight = (columnHeight + columnPadding) * shelvesNo;
   const margin = {
     top: 120,
-    left: 500,
+    left: (width - cabinetWidth) / 2,
   };
 
   const positionY = (d, i) => {
@@ -77,6 +77,23 @@ export const createBarChart = (parent, props) => {
 
   books.exit().remove();
 
+  booksEnter
+    .attr("cursor", (d) => "pointer")
+    .on("click", (event, d) => {
+      d3.select("#book_info").html(`
+    <div class="book_title">${d.title} <div> by <i> ${d.author}</i> </div></div>
+    <div class="book_location"><i>Was banned <b>${d.count}</b> times in ${
+        d.banned_in.length
+      } countries:</i>
+    <ul>
+    ${d.banned_in
+      .map((country) => `<li>${country.location}: ${country.count} times</li>`)
+      .join("")}
+  </ul>
+  </div>
+  `);
+    });
+
   // TOOLTIP EVENTS
   const tooltipPadding = 15;
   booksEnter
@@ -87,13 +104,8 @@ export const createBarChart = (parent, props) => {
         .style("left", event.pageX + tooltipPadding + "px")
         .style("top", event.pageY + tooltipPadding + "px").html(`
         <div class="tooltip-title">${d.title}</div>
-        <div><i> ${d.author}</i></div>
-        <div><i>Was banned in ${d.banned_in.length} countries:</i></div>
-          <ul>
-          ${d.banned_in
-            .map((country) => `<li>${country.location}</li>`)
-            .join("")}
-        </ul>
+        <div>by <i> ${d.author}</i></div>
+        <div>Was banned in ${d.banned_in.length} countries</div>
       `);
     })
     .on("mouseleave", () => {

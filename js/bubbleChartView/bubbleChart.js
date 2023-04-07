@@ -8,7 +8,8 @@ import {
   COLOUR_MULTIPLE_BOOKS_BANNED,
 } from "../colourPallete.js";
 export const createBubbleChart = (parent, props) => {
-  let { data, width, height, xScale, colourScale } = props;
+  let { data, width, height, xScale, colourScale, onClick, isAuthorSelected } =
+    props;
 
   const xMiddle = width / 2;
   const yMiddle = height / 2;
@@ -65,7 +66,9 @@ export const createBubbleChart = (parent, props) => {
   circlesEnter
     .merge(circles)
     .attr("r", (d) => d.r)
-    .attr("fill", (d) => getBubbleColour(d));
+    .attr("fill", (d) => getBubbleColour(d))
+    .style("stroke-width", (d) => (isAuthorSelected(d.author) ? 3 : 1.5))
+    .style("stroke", (d) => (isAuthorSelected(d.author) ? "black" : "white"));
 
   circles.exit().remove();
 
@@ -106,6 +109,15 @@ export const createBubbleChart = (parent, props) => {
         .attr("cy", (d) => d.y);
     });
 
+  // TODO: on click bigger the border of the circle
+  // TODO: on click save the filter and display it
+  // TODO: on double-click remove the filter
+  // TODO: display the map?
+  circlesEnter
+    .attr("cursor", (d) => "pointer")
+    .on("click", (event, d) => {
+      onClick(d.author);
+    });
   // Tooltip event
   const tooltipPadding = 15;
   circlesEnter
@@ -116,17 +128,7 @@ export const createBubbleChart = (parent, props) => {
         .style("left", event.pageX + tooltipPadding + "px")
         .style("top", event.pageY + tooltipPadding + "px").html(`
         <div class="tooltip-title">${d.author}</div>
-        <div><i>Was banned <b>${d.count}</b> times in ${
-        d.banned_in.length
-      } countries:</i></div>
-        <ul>
-        ${d.banned_in
-          .map(
-            (country) => `<li>${country.location}: ${country.count} times</li>`
-          )
-          .join("")}
-      </ul>
-      `);
+        <i>Was banned <b>${d.count}</b> times </i> `);
     })
     .on("mouseleave", () => {
       d3.select("#tooltip").style("display", "none");

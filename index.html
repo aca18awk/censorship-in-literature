@@ -16,22 +16,6 @@
     </div>
   </header>
   <body>
-    <!-- <ul class="legend">
-      <li class="legend-item" data-difficulty="Easy">
-        <span class="legend-symbol"></span> Easy
-      </li>
-      <li class="legend-item" data-difficulty="Intermediate">
-        <span class="legend-symbol"></span> Intermediate
-      </li>
-      <li class="legend-item" data-difficulty="Difficult">
-        <span class="legend-symbol"></span> Difficult
-      </li>
-    </ul>
-
-    <div class="source">
-      Source: Data from
-      <a href="https://vancouvertrails.com/trails/">vancouvertrails.com</a>
-    </div> -->
 
     <div class="filters">
       <span>Display results:</span>
@@ -40,7 +24,17 @@
       <span>Select location:</span>
       <span id="location_menu"></span>
     </div>
-    <svg width="1400" height="700"></svg>
+    <div id="graphs_container">
+      <div id="map_container">
+    <svg width="900" height="700"></svg>
+      </div>
+    <div id="line_container">
+      <div id="book_info">  </div>
+      <div>
+      <svg width="500" height="200" class="legendSvg"></svg>
+    </div>
+  </div>
+    
 
     <div id="tooltip"></div>
     <script src="./js/barChartView/index.js" type="module"></script>

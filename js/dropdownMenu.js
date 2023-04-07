@@ -11,6 +11,8 @@ Standard 'dropdown menu' html component
 export const dropdownMenu = (parent, props) => {
   const { options, onOptionSelected, selected } = props;
 
+  console.log("options: ", options);
+
   const select = parent.selectAll("select").data([null]);
   const selectEnter = select
     .enter()
@@ -26,4 +28,6 @@ export const dropdownMenu = (parent, props) => {
     .attr("value", (d) => d.value)
     .property("selected", (d) => d.value === selected)
     .text((d) => d.name);
+
+  option.exit().remove();
 };
