@@ -7,28 +7,8 @@
   stroke-width: 15;
 }
 
-.bookTitle {
-  font-size: 6px;
-}
-
-#book_info {
-  margin: 30px;
-  margin-top: 0px;
-  background-color: antiquewhite;
-  min-height: 320px;
-}
-
-.book_title {
-  font-size: 20px;
-  text-align: center;
-  font-weight: bold;
-  padding: 10px;
-}
-
-.book_location {
-  /* background-color: #661b04; */
-  padding: 10px;
-  height: 200px;
-  font-size: 15px;
-  overflow-y: scroll;
+.book_author {
+  font-family: "Tahoma", sans-serif;
+  font-size: 18px;
+  font-style: italic;
 }

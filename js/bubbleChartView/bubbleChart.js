@@ -6,6 +6,7 @@
 import {
   COLOUR_ALL_BOOKS_BANNED,
   COLOUR_MULTIPLE_BOOKS_BANNED,
+  COLOUR_SELECTED_AUTHOR,
 } from "../colourPallete.js";
 export const createBubbleChart = (parent, props) => {
   let { data, width, height, xScale, colourScale, onClick, isAuthorSelected } =
@@ -66,7 +67,9 @@ export const createBubbleChart = (parent, props) => {
   circlesEnter
     .merge(circles)
     .attr("r", (d) => d.r)
-    .attr("fill", (d) => getBubbleColour(d))
+    .attr("fill", (d) =>
+      isAuthorSelected(d.author) ? COLOUR_SELECTED_AUTHOR : getBubbleColour(d)
+    )
     .style("stroke-width", (d) => (isAuthorSelected(d.author) ? 3 : 1.5))
     .style("stroke", (d) => (isAuthorSelected(d.author) ? "black" : "white"));
 
@@ -82,7 +85,8 @@ export const createBubbleChart = (parent, props) => {
         .forceX((d) =>
           d.isPointOnCircle
             ? xMiddle
-            : xScale(Math.min(Math.max(d3.randomNormal(0.5, 0.1)(), 0), 1))
+            : // force to move the remaining points to the line
+              xScale(Math.min(Math.max(d3.randomNormal(0.5, 0.1)(), 0), 1))
         )
         .strength(forceStrength)
     )
@@ -109,16 +113,12 @@ export const createBubbleChart = (parent, props) => {
         .attr("cy", (d) => d.y);
     });
 
-  // TODO: on click bigger the border of the circle
-  // TODO: on click save the filter and display it
-  // TODO: on double-click remove the filter
-  // TODO: display the map?
-  circlesEnter
-    .attr("cursor", (d) => "pointer")
-    .on("click", (event, d) => {
-      onClick(d.author);
-    });
-  // Tooltip event
+  // interaction events
+
+  circlesEnter.attr("cursor", "pointer").on("click", (_, d) => {
+    onClick(d.author);
+  });
+
   const tooltipPadding = 15;
   circlesEnter
     .on("mouseover", (event, d) => {

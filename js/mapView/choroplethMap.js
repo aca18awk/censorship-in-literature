@@ -13,7 +13,7 @@ export const drawChoroplethMap = (parent, props) => {
 
   // // Define projection and pathGenerator
   const projection = d3
-    .geoEquirectangular()
+    .geoMercator()
     .center([0, 15]) // set centre to further North
     .scale([width / (2 * Math.PI)]) // scale to fit group width
     .translate([width / 2, height / 2]);
@@ -50,6 +50,7 @@ export const drawChoroplethMap = (parent, props) => {
 
   const allCountriesEnter = allCountries.enter().append("path");
 
+  // different styling of countries depending on whether the country is selected or not
   allCountriesEnter
     .merge(allCountries)
     .attr("class", "country")
@@ -83,16 +84,22 @@ export const drawChoroplethMap = (parent, props) => {
 
   allCountriesEnter
     .on("mouseover", (event, d) => {
-      d3
-        .select("#tooltip")
+      const tooltip = d3.select("#tooltip");
+      tooltip
         .style("display", "block")
         .style("left", event.pageX + tooltipPadding + "px")
-        .style("top", event.pageY + tooltipPadding + "px").html(`
-            <div class="tooltip-title">${d.properties.name}</div>
-            <div>${
-              d.properties.count ? d.properties.count : "No data available"
-            } </div>
-          `);
+        .style("top", event.pageY + tooltipPadding + "px");
+      if (d.properties.count) {
+        tooltip.html(`
+              <div class="tooltip-title">${d.properties.name}</div>
+              <div>${d.properties.count} books banned </div>
+            `);
+      } else {
+        tooltip.html(`
+          <div class="tooltip-title">${d.properties.name}</div>
+          <div>${"No data available"} </div>
+        `);
+      }
     })
     .on("mouseleave", () => {
       d3.select("#tooltip").style("display", "none");

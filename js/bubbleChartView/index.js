@@ -7,6 +7,7 @@ import {
 } from "../constants.js";
 import { COLOUR_NUMERICAL_ARRAY_4 } from "../colourPallete.js";
 import { addLegend } from "./legend.js";
+import { drawMap } from "../worldMap.js";
 
 // Global/state variables
 let plot_data;
@@ -15,13 +16,24 @@ let no_of_results_selected = "300";
 let circleRadiusScale;
 let colourScale;
 let authors_options;
+let countries;
 
-const svg = d3.select("svg");
-const svgLineGraph = d3.select("svg.legendSvg");
-// .attr("width", +document.documentElement.clientWidth)
-// .attr("height", +document.documentElement.clientHeight);
+// get svgs
+const svg = d3
+  .select("svg")
+  .attr("width", +document.documentElement.clientWidth * 0.6)
+  .attr("height", +document.documentElement.clientHeight * 0.8);
 const width = +svg.attr("width");
 const height = +svg.attr("height");
+
+const svgLegend = d3
+  .select("svg.legendSvg")
+  .attr("width", +document.documentElement.clientWidth * 0.3);
+
+const mapSvg = d3
+  .select("svg.mapSvg")
+  .attr("width", +document.documentElement.clientWidth * 0.35 - 30)
+  .attr("height", +document.documentElement.clientHeight * 0.3);
 
 const xScale = d3.scaleLinear().domain([0, 1]).range([0, width]);
 const yScale = d3.scaleLinear().domain([0, 1]).range([0, height]);
@@ -54,30 +66,49 @@ const filterData = () => {
   );
 };
 
-const onLocationSelected = (event) => {
-  let location_selected = event.target.value;
-  sessionStorage.setItem("location", location_selected);
-  if (location_selected === "All countries") {
-    plot_data = all_data;
-    updateAuthorsDropdown();
+const isAuthorSelected = (author) =>
+  author === sessionStorage.getItem("author");
+
+// filter data and update the description
+const onAuthorSelected = (name) => {
+  if (name === "All authors" || name === sessionStorage.getItem("author")) {
+    sessionStorage.removeItem("author");
+    displayDescription();
   } else {
-    // data only contains data points from selected country
-    filterData();
-    updateAuthorsDropdown();
-    if (!plot_data.find((d) => d.author === sessionStorage.getItem("author")))
-      onClick("All authors");
+    sessionStorage.setItem("author", name);
+    const details = all_data.find((d) => d.author === name);
+    displayAuthorDetails(details);
   }
   updateVis();
 };
 
-const updateDetails = (d) => {
+const onLocationSelected = (event) => {
+  let location_selected = event.target.value;
+  if (location_selected === "All countries") {
+    sessionStorage.removeItem("location");
+    plot_data = all_data;
+    updateAuthorsDropdown();
+  } else {
+    sessionStorage.setItem("location", location_selected);
+    // data only contains data points from selected country
+    filterData();
+    updateAuthorsDropdown();
+    // if country data doesn't contain selected author, remove the selection
+    if (!plot_data.find((d) => d.author === sessionStorage.getItem("author")))
+      onAuthorSelected("All authors");
+  }
+  updateVis();
+};
+
+// function to display author details
+const displayAuthorDetails = (selected) => {
   d3.select("#book_info").html(`
-  <div class="book_title">${d.author}</div>
-  <div class="book_location"><i>Was banned <b>${d.count}</b> times in ${
-    d.banned_in.length
+  <div class="book_title">${selected.author}</div>
+  <div class="book_location"><i>Was banned <b>${selected.count}</b> times in ${
+    selected.banned_in.length
   } countries:</i>
   <ul>
-  ${d.banned_in
+  ${selected.banned_in
     .map((country) => `<li>${country.location}: ${country.count} times</li>`)
     .join("")}
 </ul>
@@ -85,21 +116,16 @@ const updateDetails = (d) => {
 `);
 };
 
-const isAuthorSelected = (author) =>
-  author === sessionStorage.getItem("author");
-
-const onClick = (name) => {
-  if (name === "All authors" || name === sessionStorage.getItem("author")) {
-    sessionStorage.setItem("author", "All authors");
-    d3.select("#book_info").html(`
-    <div class="book_title">Select author to see more info</div>
-  `);
-  } else {
-    sessionStorage.setItem("author", name);
-    const details = all_data.find((d) => d.author === name);
-    updateDetails(details);
-  }
-  updateVis();
+const displayDescription = () => {
+  d3.select("#book_info").html(`
+  <div class="book_title">The most censored authors</div>
+  <div class="information"> 
+  <p> The data has been taken from <a href="https://www.kasselerliste.com/die-kasseler-liste/"> Die Kasseler Liste </a> database. </p>
+  <p>Each circle represents an author. To see more information, hover or click on it. </p>
+  <p> To see the books written by the author, select them and go to "The most banned books" tab. </p>
+  <p> You can also filter the data by location and the number of results. </p>
+</div>
+`);
 };
 
 const updateVis = () => {
@@ -118,7 +144,7 @@ const updateVis = () => {
 
   dropdownMenu(d3.select("#author_menu"), {
     options: authors_options,
-    onOptionSelected: (event) => onClick(event.target.value),
+    onOptionSelected: (event) => onAuthorSelected(event.target.value),
     selected: sessionStorage.getItem("author"),
   });
 
@@ -129,78 +155,95 @@ const updateVis = () => {
     height,
     xScale,
     colourScale,
-    onClick,
+    onClick: onAuthorSelected,
     isAuthorSelected,
   });
 
   // create chart legend
-  svgLineGraph.call(addLegend, {
+  svgLegend.call(addLegend, {
     colourScale,
     circleRadiusScale,
     legendTitle,
   });
+
+  // display the map of countries the author was banned in, if author is selected
+  const author = sessionStorage.getItem("author");
+  if (author) {
+    const details = plot_data.find((d) => d.author === author);
+    mapSvg.style("display", "inline");
+    mapSvg.call(drawMap, {
+      countries,
+      mapData: details.banned_in.map((country) => country.location),
+    });
+  } else {
+    mapSvg.style("display", "none");
+  }
 };
 
-const prepareData = () => {
-  // Data loading, preprocessing, and init visualisation
-  d3.csv("./data/authors_all.csv").then((loadedData) => {
-    const dataExtent = d3.extent(loadedData, (d) => +d.count);
+// Data loading, preprocessing, and init visualisation
+Promise.all([
+  d3.csv("./data/authors.csv"),
+  d3.json("./data/countries_topology.json"),
+]).then(([loadedData, topoData]) => {
+  countries = topojson.feature(topoData, topoData.objects.countries);
 
-    // define scales
-    circleRadiusScale = d3
-      .scaleSqrt()
-      .domain(dataExtent)
-      .range([circleSize.min, circleSize.max]);
+  const dataExtent = d3.extent(loadedData, (d) => +d.count);
 
-    colourScale = d3
-      .scaleLinear()
-      .domain([dataExtent[0], 20, 50, dataExtent[1]])
-      .range(COLOUR_NUMERICAL_ARRAY_4);
+  // define scales
+  circleRadiusScale = d3
+    .scaleSqrt()
+    .domain(dataExtent)
+    .range([circleSize.min, circleSize.max]);
 
-    // data parsing
-    let processedData = [];
-    loadedData.forEach((author) => {
-      // for each author, only add the countries they were banned in
-      let banned_in = [];
-      LOCATIONS.forEach((location) => {
-        if (author[location]) {
-          banned_in.push({
-            location,
-            count: +author[location],
-          });
-        }
-      });
+  colourScale = d3
+    .scaleLinear()
+    .domain([dataExtent[0], 20, 50, dataExtent[1]])
+    .range(COLOUR_NUMERICAL_ARRAY_4);
 
-      processedData.push({
-        author: author.author,
-        count: +author.count,
-        all_works_forbidden: author.all_works_forbidden === "TRUE",
-        multiple_works_forbidden: author.multiple_works_forbidden === "TRUE",
-        r: circleRadiusScale(+author.count),
-        // random location
-        x: xScale(Math.min(Math.max(d3.randomNormal(0.5, 0.1)(), 0), 1)),
-        y: yScale(Math.min(Math.max(d3.randomNormal(0.5, 0.15)(), 0), 1)),
-
-        // around 80% points are on the circle
-        isPointOnCircle: Math.random() < 0.8,
-        banned_in,
-      });
+  // data parsing
+  let processedData = [];
+  loadedData.forEach((author) => {
+    // for each author, only add the countries they were banned in
+    let banned_in = [];
+    LOCATIONS.forEach((location) => {
+      if (author[location]) {
+        banned_in.push({
+          location,
+          count: +author[location],
+        });
+      }
     });
 
-    all_data = processedData;
-    plot_data = processedData;
-    const locationSelected = sessionStorage.getItem("location");
-    if (locationSelected && locationSelected !== "All countries") filterData();
-    updateAuthorsDropdown();
+    processedData.push({
+      author: author.author,
+      count: +author.count,
+      all_works_forbidden: author.all_works_forbidden === "TRUE",
+      multiple_works_forbidden: author.multiple_works_forbidden === "TRUE",
+      r: circleRadiusScale(+author.count),
+      // random location
+      x: xScale(Math.min(Math.max(d3.randomNormal(0.5, 0.1)(), 0), 1)),
+      y: yScale(Math.min(Math.max(d3.randomNormal(0.5, 0.15)(), 0), 1)),
 
-    const authorSelected = sessionStorage.getItem("author");
-    if (authorSelected && authorSelected !== "All authors") {
-      const details = all_data.find((d) => d.author === authorSelected);
-      updateDetails(details);
-    }
-
-    // Init visualisation
-    updateVis();
+      // around 80% points are on the circle
+      isPointOnCircle: Math.random() < 0.8,
+      banned_in,
+    });
   });
-};
-prepareData();
+
+  all_data = processedData;
+  plot_data = processedData;
+
+  // apply filters if they are already selected
+  if (sessionStorage.getItem("location")) filterData();
+
+  const authorSelected = sessionStorage.getItem("author");
+  if (authorSelected) {
+    const details = all_data.find((d) => d.author === authorSelected);
+    displayAuthorDetails(details);
+  } else displayDescription();
+
+  updateAuthorsDropdown();
+
+  // Init visualisation
+  updateVis();
+});

@@ -1,44 +1,16 @@
 // https://d3-graph-gallery.com/graph/line_several_group.html
-import { COLOUR_ORIDINAL_ARRAY_9 } from "../colourPallete.js";
 export const drawLineGraph = (parent, props) => {
   // unpack my props
-  const { data, margin, xValue, yValue } = props;
-  let minYear, maxYear;
-  let minCount, maxCount;
+  const { lineData, minYear, maxYear, maxCount, margin, xValue, yValue } =
+    props;
 
-  // TODO: consider moving it to index to move all the data processing outside the
   // drawing module
-  data.forEach((country) => {
-    const [firstYear, lastYear] = d3.extent(country.years, (d) => d.year);
-    const [countMin, countMax] = d3.extent(country.years, (d) => d.count);
-    minYear = minYear ? Math.min(firstYear, minYear) : firstYear;
-    maxYear = maxYear ? Math.max(maxYear, lastYear) : lastYear;
-    minCount = minCount ? Math.min(countMin, minCount) : countMin;
-    maxCount = maxCount ? Math.max(maxCount, countMax) : countMax;
-  });
-
-  let lineData = [];
-  data.forEach((country) => {
-    let years = [];
-    for (let i = minYear; i <= maxYear; i++) {
-      const csvObject = country.years.find((e) => e.year === String(i));
-      let a = {
-        year: i,
-        count: csvObject ? csvObject.count : 0,
-      };
-      years.push(a);
-    }
-    lineData.push({
-      name: country.name,
-      years: years,
-    });
-  });
-
   const width = +parent.attr("width");
   const height = +parent.attr("height");
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
+  // define chart area
   const chartArea = parent.selectAll(".chart").data([null]);
   const chart = chartArea
     .enter()
@@ -46,6 +18,7 @@ export const drawLineGraph = (parent, props) => {
     .attr("class", "chart")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
+  // add zooming functionality
   parent.call(
     d3
       .zoom()
@@ -71,11 +44,6 @@ export const drawLineGraph = (parent, props) => {
     .range([0, innerWidth])
     .nice();
 
-  let color = d3
-    .scaleOrdinal()
-    .domain(lineData, (d) => d.name)
-    .range(COLOUR_ORIDINAL_ARRAY_9);
-
   const xAxisTicks = xScale.ticks().filter((tick) => Number.isInteger(tick));
 
   // Initialise axes
@@ -84,8 +52,6 @@ export const drawLineGraph = (parent, props) => {
     .tickValues(xAxisTicks)
     .tickFormat(d3.format("d"));
 
-  const yAxis = d3.axisLeft(yScale).tickPadding(10);
-
   const xAxisG = chartArea.select(".x-axis");
   const xAxisGEnter = chart
     .append("g")
@@ -93,7 +59,7 @@ export const drawLineGraph = (parent, props) => {
     .attr("transform", `translate(0,${innerHeight})`);
   xAxisG.merge(xAxisGEnter).call(xAxis);
 
-  // Append y-axis group
+  const yAxis = d3.axisLeft(yScale).tickPadding(10);
   const yAxisG = chartArea.select(".y-axis");
   const yAxisGEnter = chart.append("g").attr("class", "y-axis");
   yAxisG.merge(yAxisGEnter).call(yAxis);
@@ -107,14 +73,15 @@ export const drawLineGraph = (parent, props) => {
   const line = chart
     .merge(chartArea)
     .selectAll(".chart-line")
-    .data(lineData, (d) => d.name);
+    // so it updates every time we remove the country
+    .data(lineData, (d) => d.color.concat(d.name));
 
   // Update the line
   line
     .enter()
     .append("path")
     .attr("class", "chart-line")
-    .attr("stroke", (d) => color(d.name))
+    .attr("stroke", (d) => d.color)
     .merge(line)
     .transition()
     .duration(1000)
@@ -122,17 +89,26 @@ export const drawLineGraph = (parent, props) => {
 
   line.exit().remove();
 
-  // consider moving the chart legend to a separate file
-  const legend = parent.selectAll(".lineLegend").data(lineData, (d) => d.name);
+  // append the legend
+  const positionY = (_, i) => {
+    return innerHeight + 40 + (i % 4) * 25;
+  };
 
-  // Update the line
+  const positionX = (i) => {
+    return 10 + (parseInt(i / 4) * width) / 2;
+  };
+
+  const legend = parent
+    .selectAll(".lineLegend")
+    .data(lineData, (d) => d.color.concat(d.name));
+
   const legendBox = legend
     .enter()
     .append("g")
     .attr("class", "lineLegend")
     .attr(
       "transform",
-      (d, i) => `translate(${10},${innerHeight + (i + 2) * 20})`
+      (d, i) => `translate(${positionX(i)},${positionY(d, i)})`
     );
 
   legendBox
@@ -142,7 +118,7 @@ export const drawLineGraph = (parent, props) => {
 
   legendBox
     .append("rect")
-    .attr("fill", (d) => color(d.name))
+    .attr("fill", (d) => d.color)
     .attr("width", 10)
     .attr("height", 10);
 

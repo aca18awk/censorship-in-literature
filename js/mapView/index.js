@@ -1,21 +1,30 @@
-import { loadAndProcessData } from "./loadAndProcessData.js";
+import { loadAndProcessData, createLineData } from "./dataHelpers.js";
 import { drawChoroplethMap } from "./choroplethMap.js";
 import { drawLineGraph } from "./lineGraph.js";
 import { LOCATIONS_OPTIONS } from "../constants.js";
 import { dropdownMenu } from "../dropdownMenu.js";
 import { addMapLegend } from "./mapLegend.js";
-import { addOptionButton, removeButton } from "../locationButton.js";
+import { addOptionButton, removeButton } from "./locationButton.js";
 import { COLOUR_NUMERICAL_ARRAY_4 } from "../colourPallete.js";
 
 const selectedOptions = document.querySelector(".selected-options");
-const svgMap = d3.select("svg");
-const svgLineGraph = d3.select("svg.lineGraph");
+
+// get svgs
+const svgMap = d3
+  .select("svg")
+  .attr("width", +document.documentElement.clientWidth * 0.6)
+  .attr("height", +document.documentElement.clientHeight * 0.75);
+const svgLineGraph = d3
+  .select("svg.lineGraph")
+  .attr("width", +document.documentElement.clientWidth * 0.3)
+  .attr("height", +document.documentElement.clientHeight * 0.75);
 
 let all_data;
 let plot_data = [];
 let lastLocationSelected = "All countries";
 let colourScale;
 
+// define event listener to add interactivity for country buttons
 selectedOptions.addEventListener("click", (event) => {
   if (event.target.tagName === "BUTTON") {
     const button = event.target;
@@ -39,29 +48,29 @@ const unselectCountry = (country) => {
   removeButton(button, country);
 };
 
-const onMapClick = (d) => {
-  const country = d.properties.name;
-  if (isCountrySelected(country)) {
-    unselectCountry(country);
+// used on selection of the country from the dropdown and from the map
+const onCountrySelected = (name, countryProps = null) => {
+  if (isCountrySelected(name)) {
+    unselectCountry(name);
   } else {
-    addOptionButton(country, selectedOptions);
-    plot_data.push(d.properties);
-  }
-  updateVis();
-};
-
-const onDropdownOptionSelected = (event) => {
-  const country = event.target.value;
-
-  if (isCountrySelected(country)) {
-    unselectCountry(country);
-  } else {
-    addOptionButton(country, selectedOptions);
-    lastLocationSelected = country;
-    const selectedCountryData = all_data.features.find(
-      (d) => d.properties.name === country
-    );
-    plot_data.push(selectedCountryData.properties);
+    // can plot up to 8 countries
+    if (plot_data.length >= 8) {
+      alert("You can only select 8 countries");
+    } else {
+      if (!countryProps) {
+        countryProps = all_data.features.find(
+          (d) => d.properties.name === name
+        )?.properties;
+      }
+      // only add country to the chart if it has years array
+      if (countryProps.years.length > 0) {
+        lastLocationSelected = name;
+        plot_data.push(countryProps);
+        addOptionButton(name, selectedOptions);
+      } else {
+        alert("Not enough detailed data to plot");
+      }
+    }
   }
 
   updateVis();
@@ -71,14 +80,14 @@ const updateVis = () => {
   // create location dropdown menu
   dropdownMenu(d3.select("#location_menu"), {
     options: LOCATIONS_OPTIONS,
-    onOptionSelected: onDropdownOptionSelected,
+    onOptionSelected: (event) => onCountrySelected(event.target.value),
     selected: lastLocationSelected,
   });
 
   // draw the map
   svgMap.call(drawChoroplethMap, {
     countries: all_data,
-    onClick: onMapClick,
+    onClick: (d) => onCountrySelected(d.properties.name, d.properties),
     isCountrySelected,
     isAnyCountrySelected: plot_data.length > 0,
     colourScale,
@@ -89,19 +98,24 @@ const updateVis = () => {
     colourScale,
   });
 
-  // TODO: add max no of countries to display
   // only draw the graph if the selected countries have data to be displayed on the graph
-  const lineChartData = plot_data.filter((country) => country.years.length > 0);
-  if (lineChartData.length > 0) {
-    svgLineGraph.style("display", "inline");
+  if (plot_data.length > 0) {
+    // process the data for the lineChart
+    const [lineData, minYear, maxYear, maxCount] = createLineData(plot_data);
+    d3.select("div#hidden_information").style("display", "none");
+    svgLineGraph.style("display", "block");
     svgLineGraph.call(drawLineGraph, {
-      data: lineChartData,
-      margin: { top: 10, bottom: 100, left: 60, right: 40 },
+      lineData,
+      minYear,
+      maxYear,
+      maxCount,
+      margin: { top: 10, bottom: 120, left: 60, right: 40 },
       yValue: (d) => new Date(d.year, 0),
       xValue: (d) => d.count,
     });
   } else {
     // hide the graph if there's no data to display
+    d3.select("div#hidden_information").style("display", "inline");
     svgLineGraph.style("display", "none");
   }
 };
@@ -112,6 +126,8 @@ loadAndProcessData().then((loadedData) => {
   // define colour scale
   const countExtent = d3.extent(all_data.features, (d) => d.properties.count);
 
+  // because only a few countries has values above 30000 and majority of them is from 0 until 500,
+  // I defined the colour scale to help differentiate between the most common values
   colourScale = d3
     .scaleLinear()
     .domain([countExtent[0], 100, 500, countExtent[1]])

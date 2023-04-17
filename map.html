@@ -1,31 +1,30 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Forbidden Authors</title>
+    <title>Forbidden Library</title>
+    <link rel="icon" type="image/png" href="css/icon.png" />
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/topojson@3.0.2/dist/topojson.min.js"></script>
     <link rel="stylesheet" href="./css/styles.css" />
     <link rel="stylesheet" href="./css/map.css" />
   </head>
 
+  <!-- page nagivation -->
   <header>
     <div>
       <a class="page_title">Forbidden Library</a>
       <a href="index.html">The most banned books</a>
       <a href="authors.html">The most censored Authors</a>
-      <a href="map.html">Censorship in different countries </a>
+      <a href="map.html" class="page_selected"
+        >Censorship in different countries
+      </a>
     </div>
   </header>
+
   <body>
     <div id="country-info"></div>
 
-    <!-- <div id="menus">
-      <span>Display results:</span>
-      <span id="number_of_results_menu"></span>
-
-      <span>Select location:</span>
-      <span id="location_menu"></span>
-    </div> -->
+    <!-- graph filters -->
     <div class="filters">
       <span>
         <label for="location_menu">Select locations:</label>
@@ -35,13 +34,44 @@
         <span>Filters:</span>
       </span>
     </div>
-    <div id="graphs_container">
-      <div id="map_container">
+
+    <!-- main graph -->
+      <div id="left_container">
         <h3>Total number of banned volumes in history by country</h3>
         <svg width="800" height="480"></svg>
       </div>
-      <div id="line_container">
+
+      <!-- legend and supplementary graph -->
+      <div id="right_container">
         <h3 id="line_title">Number of books banned over the years</h3>
+        <!-- Page legend -->
+        <div id="hidden_information">
+          <div id="book_info">
+            <div class="book_title">
+              Compare censorship in different countries
+            </div>
+            <div class="information">
+              <p>
+                The data has been taken from
+                <a href="https://www.kasselerliste.com/die-kasseler-liste/">
+                  Die Kasseler Liste
+                </a>
+                database.
+              </p>
+              <p>
+                The map on the left shows the total number of banned volumes in
+                history by country. To see more information, hover over the
+                country.
+              </p>
+              <p>
+                When you click on or select the country, you will see the number
+                of books banned over the years displayed on the line graph. You
+                can add up to 8 countries to it.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <svg width="460" height="600" class="lineGraph"></svg>
       </div>
 

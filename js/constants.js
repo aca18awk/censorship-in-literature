@@ -46,7 +46,6 @@ export const LOCATIONS = [
   "Czechia",
   "Denmark",
   "Djibouti",
-  "East Germany",
   "Egypt",
   "Eritrea",
   "Estonia",
@@ -131,7 +130,7 @@ export const LOCATIONS_OPTIONS = [
   })),
 ];
 
-export const year_ban = [
+export const YEARS_OF_BAN = [
   "1517",
   "1520",
   "1575",

@@ -1,12 +1,9 @@
-// Adopted from: https://github.com/jeffreymorganio/d3-country-bubble-chart
-// https://www.d3indepth.com/force-layout/
-// https://observablehq.com/d/bab58bcfeea93d76
-// https://stackoverflow.com/questions/51153379/getting-d3-force-to-work-in-update-pattern
-import { drawBookshelf } from "./bookshelfShape.js";
+import { COLOUR_BOOK_SELECTED, COLOUR_BOOK } from "../colourPallete.js";
+import { drawCabinet } from "./cabinet.js";
 
 export const createBarChart = (parent, props) => {
   // unpack my props
-  let { data, width, height, colourScale } = props;
+  let { data, width, height, onBookSelected, isBookSelected } = props;
   const columnHeight = 100;
   const columnPadding = 10;
   const bookWidth = 15;
@@ -21,7 +18,9 @@ export const createBarChart = (parent, props) => {
     left: (width - cabinetWidth) / 2,
   };
 
-  const positionY = (d, i) => {
+  // calculates the Y position of the book
+  // position 20 books on the shelf
+  const getBookPositionY = (d, i) => {
     const bookshelf_no = parseInt(i / booksOnShelfNo);
     return (
       margin.top +
@@ -30,19 +29,23 @@ export const createBarChart = (parent, props) => {
     );
   };
 
-  const positionX = (i) => {
+  // calculates the X position of the book
+  // position 20 books on the shelf
+  const getBookPositionX = (i) => {
     return margin.left + (bookWidth + bookPadding) * (i % booksOnShelfNo);
   };
 
+  // calculates the height of the book
   const yScale = d3
     .scaleLinear()
     .domain(d3.extent(data, (d) => d.count))
     .range([columnHeight / 2, 0]);
 
   // Chart taking care of inner margins
-  const chart = parent.selectAll(".bubbleChart").data([null]);
-  const chartEnter = chart.enter().append("g").attr("class", "bubbleChart");
+  const chart = parent.selectAll(".barChart").data([null]);
+  const chartEnter = chart.enter().append("g").attr("class", "barChart");
 
+  // zoom event
   parent.call(
     d3
       .zoom()
@@ -57,7 +60,13 @@ export const createBarChart = (parent, props) => {
   );
 
   // draw the bookshelf shape
-  drawBookshelf(chartEnter, margin, cabinetHeight, cabinetWidth, positionX);
+  drawCabinet(
+    chartEnter,
+    margin,
+    cabinetHeight,
+    cabinetWidth,
+    getBookPositionX
+  );
 
   // Plot data
   const books = chartEnter
@@ -67,32 +76,42 @@ export const createBarChart = (parent, props) => {
 
   const booksEnter = books.enter().append("rect").attr("class", "book");
 
+  chartEnter
+    .append("pattern")
+    .attr("id", "dot-pattern")
+    .attr("patternUnits", "userSpaceOnUse")
+    .attr("width", 4)
+    .attr("height", 4)
+    .append("rect")
+    .attr("fill", COLOUR_BOOK_SELECTED)
+    .attr("width", "100%")
+    .attr("height", "100%");
+
+  // Create dotted pattern for the selected book
+  chartEnter
+    .select("#dot-pattern")
+    .append("circle")
+    .attr("cx", 2.5)
+    .attr("cy", 2.5)
+    .attr("r", 0.5)
+    .attr("fill", COLOUR_BOOK);
+
   booksEnter
     .merge(books)
-    .attr("x", (d, i) => positionX(i))
-    .attr("y", (d, i) => positionY(d, i))
+    .attr("x", (_, i) => getBookPositionX(i))
+    .attr("y", (d, i) => getBookPositionY(d, i))
     .attr("width", bookWidth)
     .attr("height", (d) => columnHeight - yScale(d.count))
-    .attr("fill", "#e0c600");
+    .attr("fill", (d) =>
+      isBookSelected(d) ? "url(#dot-pattern)" : COLOUR_BOOK
+    );
 
   books.exit().remove();
 
-  booksEnter
-    .attr("cursor", (d) => "pointer")
-    .on("click", (event, d) => {
-      d3.select("#book_info").html(`
-    <div class="book_title">${d.title} <div> by <i> ${d.author}</i> </div></div>
-    <div class="book_location"><i>Was banned <b>${d.count}</b> times in ${
-        d.banned_in.length
-      } countries:</i>
-    <ul>
-    ${d.banned_in
-      .map((country) => `<li>${country.location}: ${country.count} times</li>`)
-      .join("")}
-  </ul>
-  </div>
-  `);
-    });
+  // onClick event
+  booksEnter.attr("cursor", "pointer").on("click", (_, d) => {
+    onBookSelected(d);
+  });
 
   // TOOLTIP EVENTS
   const tooltipPadding = 15;
@@ -103,7 +122,7 @@ export const createBarChart = (parent, props) => {
         .style("display", "block")
         .style("left", event.pageX + tooltipPadding + "px")
         .style("top", event.pageY + tooltipPadding + "px").html(`
-        <div class="tooltip-title">${d.title}</div>
+        <div class="tooltip-title">"${d.title}"</div>
         <div>by <i> ${d.author}</i></div>
         <div>Was banned in ${d.banned_in.length} countries</div>
       `);

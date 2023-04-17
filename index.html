@@ -1,40 +1,44 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Forbidden Authors</title>
+    <title>Forbidden Library</title>
+    <link rel="icon" type="image/png" href="css/icon.png" />
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/topojson@3.0.2/dist/topojson.min.js"></script>
     <link rel="stylesheet" href="./css/styles.css" />
     <link rel="stylesheet" href="./css/books.css" />
   </head>
 
+  <!-- page nagivation -->
   <header>
     <div>
       <a class="page_title">Forbidden Library</a>
-      <a href="index.html">The most banned books</a>
+      <a href="index.html" class="page_selected">The most banned books</a>
       <a href="authors.html">The most censored Authors</a>
       <a href="map.html">Censorship in different countries </a>
     </div>
   </header>
+
   <body>
-
+    <!-- graph filters -->
     <div class="filters">
-      <span>Display results:</span>
-      <span id="number_of_results_menu"></span>
-
       <span>Select location:</span>
       <span id="location_menu"></span>
+
+      <span>Choose author:</span>
+      <span id="author_menu"></span>
     </div>
-    <div id="graphs_container">
-      <div id="map_container">
-    <svg width="900" height="700"></svg>
-      </div>
-    <div id="line_container">
-      <div id="book_info">  </div>
-      <div>
-      <svg width="500" height="200" class="legendSvg"></svg>
+
+    <!-- main graph -->
+    <div id="left_container">
+      <svg width="900" height="700"></svg>
     </div>
-  </div>
-    
+
+    <!-- legend and supplementary graph -->
+    <div id="right_container">
+      <div id="book_info"></div>
+      <svg width="500" height="300" class="mapSvg"></svg>
+    </div>
 
     <div id="tooltip"></div>
     <script src="./js/barChartView/index.js" type="module"></script>

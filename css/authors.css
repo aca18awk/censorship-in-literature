@@ -6,28 +6,5 @@
 
 /* styling the gradient legend. */
 .legend {
-  /* transform: translate(1000px, 520px); */
-  transform: translate(30px, 0px);
-}
-
-#book_info {
-  margin: 30px;
-  margin-top: 0px;
-  background-color: antiquewhite;
-  min-height: 320px;
-}
-
-.book_title {
-  font-size: 20px;
-  text-align: center;
-  font-weight: bold;
-  padding: 10px;
-}
-
-.book_location {
-  /* background-color: #661b04; */
-  padding: 10px;
-  height: 200px;
-  font-size: 15px;
-  overflow-y: scroll;
+  transform: translate(30px, 10px);
 }

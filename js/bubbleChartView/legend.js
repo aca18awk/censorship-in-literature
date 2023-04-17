@@ -1,14 +1,14 @@
 import {
   COLOUR_ALL_BOOKS_BANNED,
   COLOUR_MULTIPLE_BOOKS_BANNED,
+  COLOUR_SELECTED_AUTHOR,
 } from "../colourPallete.js";
 
 export const addLegend = (parent, props) => {
   const { colourScale, circleRadiusScale, legendTitle } = props;
 
   const legendWidth = 250;
-  // Create legend group to append our legend
-  // const legendGroup = parent.append("g").attr("class", "legend");
+  // Create legend group to append the legend
   const legend = parent.selectAll(".legend").data([null]);
   const legendGroup = legend.enter().append("g").attr("class", "legend");
 
@@ -29,18 +29,18 @@ export const addLegend = (parent, props) => {
       fill: colourScale(9),
     },
     {
-      legend: 55.7,
+      legend: 55,
       cx: legendWidth / 3,
       cy: 40,
-      r: circleRadiusScale(55.7),
-      fill: colourScale(55.7),
+      r: circleRadiusScale(55),
+      fill: colourScale(55),
     },
     {
-      legend: 106.6,
+      legend: 107,
       cx: (2 * legendWidth) / 3,
       cy: 40,
-      r: circleRadiusScale(106.6),
-      fill: colourScale(106.6),
+      r: circleRadiusScale(107),
+      fill: colourScale(107),
     },
     {
       legend: 155,
@@ -52,16 +52,23 @@ export const addLegend = (parent, props) => {
     {
       legend: "Some countries banned all positions of this author",
       cx: 0,
-      cy: 120,
+      cy: 110,
       r: circleRadiusScale(25),
       fill: COLOUR_ALL_BOOKS_BANNED,
     },
     {
       legend: "Some countries banned multiple positions of this author",
       cx: 0,
-      cy: 150,
+      cy: 140,
       r: circleRadiusScale(25),
       fill: COLOUR_MULTIPLE_BOOKS_BANNED,
+    },
+    {
+      legend: "Selected author",
+      cx: 0,
+      cy: 170,
+      r: circleRadiusScale(25),
+      fill: COLOUR_SELECTED_AUTHOR,
     },
   ];
 
@@ -79,13 +86,14 @@ export const addLegend = (parent, props) => {
     .attr("r", (d) => d.r)
     .style("fill", (d) => d.fill);
 
+  // get X and Y coordinates of the text
   const getTextPosition = (i) => {
+    // the first 4 circles are displayed next to each other
     if (i < 4) {
-      return [Math.round((legendWidth * i) / 3), 95];
-    } else if (i === 4) {
-      return [35, 125];
+      return [Math.round((legendWidth * i) / 3), 85];
     }
-    return [35, 155];
+    // the other circles are displayed one per row
+    return [35, 115 + (i - 4) * 30];
   };
 
   circleGroups

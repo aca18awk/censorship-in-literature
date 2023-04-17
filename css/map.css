@@ -2,3 +2,19 @@
 .legend {
   transform: translate(20px, 400px);
 }
+
+.chart-line {
+  fill: none;
+  stroke-width: 2px;
+}
+
+.selected_location {
+  border: 0.5px solid black;
+  border-radius: 6px;
+  height: 28px;
+  font-family: "Tahoma", sans-serif;
+  font-size: 15px;
+  background-color: #faebd7;
+  cursor: pointer;
+  margin-right: 5px;
+}

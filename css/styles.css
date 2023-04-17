@@ -1,72 +1,61 @@
-#map_container {
-  /* background-color: green; */
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: "Tahoma", sans-serif;
+  font-size: 15px;
+  background: #fff8e6;
+}
+
+h1 {
+  margin-top: 0;
+}
+
+h3 {
+  margin-top: 0;
+}
+
+#left_container {
   float: left;
   width: 63%;
   margin: 0;
   padding-left: 10px;
+  padding-top: 0;
 }
 
-#line_container {
-  /* background-color: yellow; */
+#right_container {
   float: right;
   margin: 0;
   width: 35%;
-}
-#graphs_container {
-  /* background-color: blue; */
-}
-
-.selected_location {
-  border: 0.5px solid black;
-  border-radius: 6px;
-  height: 25px;
-}
-svg {
-  fill: black;
-  /* background-color: red; */
-  border: 1px solid #ddd;
+  padding-top: 0;
 }
 
 .filters {
-  /* background-color: #48c8d4; */
   margin: 10px;
 }
 
-/* Add a black background color to the top navigation */
+/* Page header */
 header {
   background-color: #2b0104;
   overflow: hidden;
+  font-family: american typewriter, serif;
 }
 
-/* Style the links inside the navigation bar */
 header a {
   float: left;
   color: #f2f2f2;
   text-align: center;
-  padding: 14px 16px;
-  /* padding-top: 0; */
+  padding: 16px;
   text-decoration: none;
   font-size: 17px;
 }
 
-/* Change the color of links on hover */
 header a:hover {
-  /* background-color: #ddd; */
-  /* color: black; */
   font-weight: bold;
-}
-
-/* Add a color to the active/current link */
-header a.active {
-  background-color: #04aa6d;
-  color: white;
 }
 
 .page_title {
   color: wheat;
-  /* text-align: center; */
-  /* margin-top: 20px; */
-  font-size: 30px;
+  font-size: 32px;
   padding-top: 7px;
 }
 
@@ -74,163 +63,32 @@ header a.active {
   font-weight: normal;
 }
 
-body {
-  margin: 0;
-  overflow: hidden;
-  font-family: sans-serif;
-  font-size: 13px;
-  background: #e8e6da;
-}
-
-h1 {
-  margin-top: 0;
-}
-
-.source {
-  font-size: 10px;
-  color: #888;
-}
-.source a {
-  color: #888;
-}
-
-/* Marks */
-/*
-.point {
-  fill: steelblue;
-  opacity: 0.3;
-}
-*/
-
-.point:hover {
-  stroke: #333;
-}
-
-/* Axes */
-.axis line {
-  fill: none;
-  stroke: #ddd;
-  shape-rendering: crispEdges;
-}
-.axis text {
-  font-size: 13px;
-  fill: #6b6b6b;
-}
-.x-axis .axis-title {
-  font-size: 1.75em;
-  fill: #8e8883;
-}
-.y-axis .axis-title {
-  font-size: 1.75em;
-  fill: #8e8883;
-}
-.axis path {
-  display: none;
+.page_selected {
+  background-image: url("./selectedBackground.png");
+  background-size: 100% 100%;
+  font-weight: bold;
 }
 
 /* Tooltip */
 #tooltip {
   position: absolute;
   display: none;
-  background: #fff;
+  background: antiquewhite;
   box-shadow: 3px 3px 3px 0px rgb(92 92 92 / 0.5);
   border: 1px solid #ddd;
-  font-size: 12px;
-  font-weight: 500;
+  border-radius: 10px;
+  font-size: 14px;
   padding: 8px;
   min-width: 160px;
-  color: #333;
 }
 
 .tooltip-title {
   color: #000;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
 }
-#tooltip ul {
-  margin: 5px 0 0 0;
-  padding-left: 20px;
-}
 
-/* Legend */
-.legend {
-  list-style: none;
-  padding: 0;
-}
-.legend-item {
-  display: inline-block;
-  margin: 0 20px 0 0;
-}
-.legend-symbol {
-  width: 12px;
-  height: 12px;
-  margin-right: 3px;
-  display: inline-block;
-}
-.legend-item[data-difficulty="Easy"] .legend-symbol {
-  background: #d3eecd;
-}
-.legend-item[data-difficulty="Intermediate"] .legend-symbol {
-  background: #7bc77e;
-}
-.legend-item[data-difficulty="Difficult"] .legend-symbol {
-  background: #2a8d46;
-}
-
-circle {
-  stroke: white;
-  stroke-width: 1.5;
-}
-
-.sphere {
-  fill: #48c8d4;
-  stroke: black;
-  stroke-width: 0.5px;
-}
-
-.country {
-  stroke: white;
-  stroke-width: 0.1px;
-}
-
-.graticule {
-  stroke: black;
-  stroke-width: 0.1px;
-  fill: none;
-}
-
-/* Axes */
-.x-axis .domain {
-  stroke: #8693a0;
-}
-.tick text {
-  font-size: 1.5em;
-  fill: #6b6b6b;
-}
-.tick line {
-  stroke: #c0c0bb;
-}
-
-.chart-line {
-  fill: none;
-  /* stroke: #517390; */
-  stroke-width: 2px;
-}
-
-/* Data source */
-.source {
-  margin-top: 10px;
-  margin-left: 40px;
-  font-size: 0.75em;
-  font-family: sans-serif;
-  color: #888;
-}
-.source a {
-  color: #888;
-}
-
-/* The y position of labels was too close to the bar so I adjusted it in the
-colourbar.js and here I just changed the size of the text */
+/* legend */
 .legend-label {
   font-size: 14px;
 }
@@ -238,4 +96,43 @@ colourbar.js and here I just changed the size of the text */
 .legend-title {
   font-size: 14px;
   font-weight: bold;
+}
+
+/* dropdowns */
+select {
+  font-family: "Tahoma", sans-serif;
+  font-size: 15px;
+  background-color: #f7e0c3;
+  border-radius: 5px;
+}
+
+.information {
+  padding: 10px;
+}
+
+#book_info {
+  margin-bottom: 10px;
+  margin-right: 30px;
+  background-color: antiquewhite;
+  height: 240px;
+}
+
+.book_title {
+  font-size: 20px;
+  text-align: center;
+  font-weight: bold;
+  padding: 10px;
+  font-family: american typewriter, serif;
+}
+
+.book_location {
+  padding: 10px;
+  height: 120px;
+  font-size: 15px;
+  overflow-y: scroll;
+}
+
+/* map styling */
+.sphere {
+  fill: #48c8d4;
 }
