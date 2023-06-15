@@ -1,4 +1,3 @@
-// https://d3-graph-gallery.com/graph/line_several_group.html
 export const drawLineGraph = (parent, props) => {
   // unpack my props
   const { lineData, minYear, maxYear, maxCount, margin, xValue, yValue } =

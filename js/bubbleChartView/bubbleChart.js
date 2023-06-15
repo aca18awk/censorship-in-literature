@@ -1,8 +1,3 @@
-// Adopted from: https://github.com/jeffreymorganio/d3-country-bubble-chart
-// https://www.d3indepth.com/force-layout/
-// https://observablehq.com/d/bab58bcfeea93d76
-// https://stackoverflow.com/questions/51153379/getting-d3-force-to-work-in-update-pattern
-
 import {
   COLOUR_ALL_BOOKS_BANNED,
   COLOUR_MULTIPLE_BOOKS_BANNED,

@@ -172,7 +172,7 @@ const updateVis = () => {
 
 // Data loading, preprocessing, and init visualisation
 Promise.all([
-  d3.csv("./data/all_books.csv"),
+  d3.csv("./data/books.csv"),
   d3.json("./data/countries_topology.json"),
 ]).then(([loadedData, topoData]) => {
   // data parsing

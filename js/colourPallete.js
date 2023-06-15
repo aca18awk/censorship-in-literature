@@ -8,7 +8,7 @@ export const COLOUR_ALL_BOOKS_BANNED = "#5c0205";
 
 export const COLOUR_MULTIPLE_BOOKS_BANNED = "#e0c600";
 
-export const COLOUR_SELECTED_AUTHOR = "green";
+export const COLOUR_SELECTED_AUTHOR = "#005AB5";
 
 export const COLOUR_NUMERICAL_ARRAY_4 = [
   "#fee5d9",
